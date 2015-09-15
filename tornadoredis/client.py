@@ -356,9 +356,11 @@ class Client(object):
         if not isinstance(value, str):
             if not PY3 and isinstance(value, unicode):
                 value = value.encode('utf-8')
+            elif PY3 and isinstance(value, bytes):
+                pass
             else:
                 value = str(value)
-        if PY3:
+        if PY3 and isinstance(value, str):
             value = value.encode('utf-8')
         return value
 
@@ -1033,7 +1035,9 @@ class Client(object):
         self._subscribe('PSUBSCRIBE', channels, callback=callback)
 
     def _subscribe(self, cmd, channels, callback=None):
-        if isinstance(channels, str) or (not PY3 and isinstance(channels, unicode)):
+        if isinstance(channels, str) or \
+           (PY3 and isinstance(channels, bytes)) or \
+           (not PY3 and isinstance(channels, unicode)):
             channels = [channels]
         if not self.subscribed:
             listen_callback = None
@@ -1076,7 +1080,9 @@ class Client(object):
         self._unsubscribe('PUNSUBSCRIBE', channels, callback=callback)
 
     def _unsubscribe(self, cmd, channels, callback=None):
-        if isinstance(channels, str) or (not PY3 and isinstance(channels, unicode)):
+        if isinstance(channels, str) or \
+           (PY3 and isinstance(channels, bytes)) or \
+           (not PY3 and isinstance(channels, unicode)):
             channels = [channels]
         if callback:
             cb = stack_context.wrap(callback)
