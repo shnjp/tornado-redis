@@ -47,6 +47,9 @@ class BaseSubscriber(object):
                 _cb = callback
             self.subscribe(channel_name[0], subscriber, callback=_cb)
         else:
+            if isinstance(channel_name, bytes):
+                channel_name = channel_name.decode('utf8')
+            assert isinstance(channel_name, str)
             self.subscribers[channel_name][subscriber] += 1
             self.subscriber_count[channel_name] += 1
             if self.subscriber_count[channel_name] == 1:
